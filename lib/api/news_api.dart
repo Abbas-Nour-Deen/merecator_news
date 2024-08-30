@@ -18,7 +18,6 @@ class NewsApi extends GetConnect implements GetxService {
       Response response = await get(endpoint, headers: _mainHeaders);
       return response;
     } catch (e) {
-      print("error getting news ${e.toString()}");
       return Response(statusCode: 1, statusText: e.toString());
     }
   }

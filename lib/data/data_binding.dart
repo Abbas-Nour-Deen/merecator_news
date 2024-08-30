@@ -9,6 +9,6 @@ class DataBinding extends Bindings {
   void dependencies() {
     Get.lazyPut(() => NewsApi(appBasUrl: baseApi));
     Get.lazyPut(() => NewsRepository(newsApi: Get.find()));
-    Get.lazyPut(() => NewsController(newsRepository: Get.find()));
+    Get.put(NewsController(newsRepository: Get.find()));
   }
 }

@@ -2,22 +2,43 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:newsapp/controllers/news_controller.dart';
 import 'package:newsapp/model/news.dart';
 
 class SelectedNewsScreen extends StatelessWidget {
   final NewsModel news;
-  const SelectedNewsScreen({super.key, required this.news});
+  SelectedNewsScreen({super.key, required this.news});
+
+  final NewsController newsController = Get.find();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 15),
+            child: InkWell(
+                onTap: () {
+                  newsController.shareNewsData(news: news);
+                },
+                child: const Icon(Icons.share)),
+          )
+        ],
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [imageWidget(), content(), footer()],
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                imageWidget(),
+                info(),
+                content(),
+              ],
+            ),
           ),
         ),
       ),
@@ -31,9 +52,9 @@ class SelectedNewsScreen extends StatelessWidget {
           width: double.infinity,
           height: Get.height * 0.3,
           child: Hero(
-            tag: news.url,
+            tag: news.mainImage,
             child: CachedNetworkImage(
-              imageUrl: news.image,
+              imageUrl: news.mainImage,
               placeholder: (context, url) => SvgPicture.asset(
                 "assets/images/placeholder.svg",
                 fit: BoxFit.cover,
@@ -50,11 +71,11 @@ class SelectedNewsScreen extends StatelessWidget {
 
   Widget content() {
     return Container(
-      margin: const EdgeInsets.only(top: 6),
+      margin: const EdgeInsets.only(top: 15),
       child: Column(
         children: [
           Text(
-            news.title,
+            news.customUrlTitle,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
           const SizedBox(
@@ -67,28 +88,37 @@ class SelectedNewsScreen extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
-          Text(news.content)
+          Text(news.description)
         ],
       ),
     );
   }
 
-  Widget footer() {
+  Widget info() {
     return Container(
       margin: const EdgeInsets.only(top: 15),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          Text(
-            news.source.name,
-            style: const TextStyle(
-                fontWeight: FontWeight.w600, color: Colors.grey),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                news.source,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600, color: Colors.grey),
+              ),
+              Text(
+                news.date,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600, color: Colors.grey),
+              )
+            ],
           ),
-          Text(
-            news.publishedAt,
-            style: const TextStyle(
-                fontWeight: FontWeight.w600, color: Colors.grey),
-          )
+          news.author.isNotEmpty
+              ? Text(news.author,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600, color: Colors.grey))
+              : Container()
         ],
       ),
     );
